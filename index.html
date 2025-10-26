@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>世界的应援棒</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ee1166, #ff9900, #88dd44, #4455dd, #884499, #39c5bb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #a0a0c0;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 30px;
+        }
+        
+        .settings-panel {
+            background: rgba(30, 30, 60, 0.8);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .settings-title {
+            font-size: 1.8rem;
+            color: #fff;
+        }
+        
+        .settings-icon {
+            background: rgba(255, 255, 255, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+        }
+        
+        .settings-icon i {
+            font-size: 1.5rem;
+        }
+        
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .color-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .color-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .color-option.active {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .custom-color {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .custom-color input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+        
+        .lyrics-toggle {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .toggle-label {
+            margin-left: 10px;
+            font-size: 1.1rem;
+        }
+        
+        /* 开关样式 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #39c5bb;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 30, 60, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .preview-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #a0a0c0;
+        }
+        
+        .preview-light {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+        }
+        
+        .preview-lyrics {
+            font-size: 1.5rem;
+            text-align: center;
+            max-width: 80%;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        
+        .lyrics-hidden {
+            opacity: 0;
+        }
+        
+        .start-button {
+            background: linear-gradient(45deg, #ee1166, #ff9900);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(238, 17, 102, 0.4);
+        }
+        
+        .start-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(238, 17, 102, 0.6);
+        }
+        
+        .start-button:active {
+            transform: translateY(0);
+        }
+        
+        /* 全屏模式 */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s ease;
+        }
+        
+        .fullscreen .preview-light {
+            width: 80vmin;
+            height: 80vmin;
+            box-shadow: 0 0 100px rgba(255, 255, 255, 0.3);
+        }
+        
+        .exit-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .exit-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        /* 模态窗口 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: rgba(30, 30, 60, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.8rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            line-height: 1.6;
+        }
+        
+        .modal-body p {
+            margin-bottom: 15px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .color-options {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .preview-light {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .color-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-panel, .preview-area {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>世界的应援棒</h1>
+        <p>为你的偶像点亮专属应援色！</p>
+    </div>
+    
+    <div class="container">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <div class="settings-title">应援棒设置</div>
+                <div class="settings-icon" id="settingsButton">
+                    <i>⚙️</i>
+                </div>
+            </div>
+            
+            <div class="color-options">
+                <div class="color-option active" data-color="#ee1166">
+                    <div class="color-preview" style="background-color: #ee1166;"></div>
+                    <div class="color-name">Vivid Bad Squad!</div>
+                </div>
+                <div class="color-option" data-color="#ff9900">
+                    <div class="color-preview" style="background-color: #ff9900;"></div>
+                    <div class="color-name">Wonderland X Showtime</div>
+                </div>
+                <div class="color-option" data-color="#88dd44">
+                    <div class="color-preview" style="background-color: #88dd44;"></div>
+                    <div class="color-name">MORE MORE JUMP!</div>
+                </div>
+                <div class="color-option" data-color="#4455dd">
+                    <div class="color-preview" style="background-color: #4455dd;"></div>
+                    <div class="color-name">Leo/need</div>
+                </div>
+                <div class="color-option" data-color="#884499">
+                    <div class="color-preview" style="background-color: #884499;"></div>
+                    <div class="color-name">25时，Nightcord见</div>
+                </div>
+                <div class="color-option" data-color="#39c5bb">
+                    <div class="color-preview" style="background-color: #39c5bb;"></div>
+                    <div class="color-name">VIRTUAL SINGER</div>
+                </div>
+            </div>
+            
+            <div class="custom-color">
+                <input type="text" id="customColor" placeholder="输入自定义颜色值 (例如: #FF00FF)" maxlength="7">
+                <button class="start-button" style="padding: 10px 20px; font-size: 1rem;" id="applyCustomColor">应用</button>
+            </div>
+            
+            <div class="lyrics-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="lyricsToggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">显示歌词</span>
+            </div>
+            
+            <button class="start-button" id="startCheering">开始应援</button>
+        </div>
+        
+        <div class="preview-area">
+            <div class="preview-title">预览效果</div>
+            <div class="preview-light" id="previewLight" style="background-color: #ee1166;"></div>
+            <div class="preview-lyrics" id="previewLyrics">让我们一起为偶像应援吧！</div>
+        </div>
+    </div>
+    
+    <!-- 全屏模式 -->
+    <div class="fullscreen" id="fullscreen">
+        <div class="preview-light" id="fullscreenLight"></div>
+        <button class="exit-button" id="exitFullscreen">✕</button>
+    </div>
+    
+    <!-- 设置模态窗口 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">设置与说明</div>
+                <button class="close-modal" id="closeModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>使用说明：</strong></p>
+                <p>1. 选择预设的乐队颜色或输入自定义颜色值</p>
+                <p>2. 可以切换是否显示歌词</p>
+                <p>3. 点击"开始应援"进入全屏应援模式</p>
+                <p>4. 在全屏模式下，点击右上角的"✕"按钮退出</p>
+                
+                <p><strong>预设颜色对应乐队：</strong></p>
+                <p>• 红色 (#ee1166) - Vivid Bad Squad!</p>
+                <p>• 黄色 (#ff9900) - Wonderland X Showtime</p>
+                <p>• 绿色 (#88dd44) - MORE MORE JUMP!</p>
+                <p>• 蓝色 (#4455dd) - Leo/need</p>
+                <p>• 紫色 (#884499) - 25时，Nightcord见</p>
+                <p>• 青色 (#39c5bb) - VIRTUAL SINGER</p>
+                
+                <p><strong>提示：</strong> 自定义颜色值应为6位十六进制代码，以"#"开头。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const colorOptions = document.querySelectorAll('.color-option');
+            const customColorInput = document.getElementById('customColor');
+            const applyCustomColorBtn = document.getElementById('applyCustomColor');
+            const lyricsToggle = document.getElementById('lyricsToggle');
+            const previewLight = document.getElementById('previewLight');
+            const previewLyrics = document.getElementById('previewLyrics');
+            const startCheeringBtn = document.getElementById('startCheering');
+            const fullscreen = document.getElementById('fullscreen');
+            const fullscreenLight = document.getElementById('fullscreenLight');
+            const exitFullscreenBtn = document.getElementById('exitFullscreen');
+            const settingsButton = document.getElementById('settingsButton');
+            const settingsModal = document.getElementById('settingsModal');
+            const closeModal = document.getElementById('closeModal');
+            
+            // 当前选择的颜色
+            let currentColor = '#ee1166';
+            
+            // 颜色选项点击事件
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有active类
+                    colorOptions.forEach(opt => opt.classList.remove('active'));
+                    // 添加active类到当前选项
+                    this.classList.add('active');
+                    // 更新颜色
+                    currentColor = this.getAttribute('data-color');
+                    updatePreviewColor();
+                });
+            });
+            
+            // 应用自定义颜色
+            applyCustomColorBtn.addEventListener('click', function() {
+                const customColor = customColorInput.value.trim();
+                if (isValidColor(customColor)) {
+                    currentColor = customColor;
+                    updatePreviewColor();
+                    
+                    // 移除所有active类
+                    colorOptions.forEach(opt => opt.classList.remove('active'));
+                } else {
+                    alert('请输入有效的颜色值（例如：#FF0000）');
+                }
+            });
+            
+            // 歌词显示切换
+            lyricsToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    previewLyrics.classList.remove('lyrics-hidden');
+                } else {
+                    previewLyrics.classList.add('lyrics-hidden');
+                }
+            });
+            
+            // 开始应援按钮
+            startCheeringBtn.addEventListener('click', function() {
+                fullscreen.style.display = 'flex';
+                fullscreen.style.backgroundColor = currentColor;
+                fullscreenLight.style.backgroundColor = currentColor;
+                
+                // 进入全屏模式
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            });
+            
+            // 退出全屏
+            exitFullscreenBtn.addEventListener('click', function() {
+                fullscreen.style.display = 'none';
+                
+                // 退出全屏模式
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            });
+            
+            // 设置按钮点击事件
+            settingsButton.addEventListener('click', function() {
+                settingsModal.style.display = 'flex';
+            });
+            
+            // 关闭模态窗口
+            closeModal.addEventListener('click', function() {
+                settingsModal.style.display = 'none';
+            });
+            
+            // 点击模态窗口外部关闭
+            settingsModal.addEventListener('click', function(e) {
+                if (e.target === settingsModal) {
+                    settingsModal.style.display = 'none';
+                }
+            });
+            
+            // 更新预览颜色
+            function updatePreviewColor() {
+                previewLight.style.backgroundColor = currentColor;
+            }
+            
+            // 验证颜色值
+            function isValidColor(color) {
+                const colorRegex = /^#([0-9A-F]{6})$/i;
+                return colorRegex.test(color);
+            }
+            
+            // 初始化
+            updatePreviewColor();
+        });
+    </script>
+</body>
+</html>

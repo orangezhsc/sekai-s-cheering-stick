@@ -2,26 +2,22 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>世界的应援棒</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
         }
         
         body {
             background-color: #f5f5f5;
             color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
+            padding: 15px;
             max-width: 500px;
             margin: 0 auto;
-            padding: 20px;
         }
         
         header {
@@ -31,13 +27,14 @@
         
         h1 {
             color: #4455dd;
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 5px;
         }
         
-        .settings {
+        .settings-panel {
             background-color: white;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
@@ -46,7 +43,7 @@
             margin-bottom: 15px;
         }
         
-        label {
+        .setting-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
@@ -56,44 +53,35 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-top: 10px;
         }
         
         .color-option {
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            border: 2px solid #ddd;
             cursor: pointer;
-            border: 2px solid transparent;
             transition: transform 0.2s;
         }
         
-        .color-option:hover {
+        .color-option:hover, .color-option.active {
             transform: scale(1.1);
-        }
-        
-        .color-option.active {
             border-color: #333;
         }
         
         .custom-color {
+            margin-top: 10px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
-        #customColor {
-            width: 60px;
-            height: 40px;
-            border: none;
+        .custom-color input {
+            width: 100px;
+            padding: 5px;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .lyrics-setting {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
         
         .lyrics-toggle {
@@ -102,27 +90,78 @@
             gap: 10px;
         }
         
-        .gear-icon {
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
             cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4455dd;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .settings-icon {
+            background: none;
+            border: none;
             font-size: 20px;
+            cursor: pointer;
             color: #666;
         }
         
-        .preview {
+        .preview-area {
             height: 200px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
             margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: background-color 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .start-btn {
+        .preview-text {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .start-button {
             display: block;
             width: 100%;
             padding: 15px;
@@ -136,65 +175,11 @@
             transition: background-color 0.3s;
         }
         
-        .start-btn:hover {
+        .start-button:hover {
             background-color: #3344cc;
         }
         
-        /* 全屏应援模式 */
-        .cheer-mode {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: background-color 0.5s;
-        }
-        
-        .lyrics-container {
-            width: 90%;
-            max-width: 600px;
-            height: 60%;
-            overflow: hidden;
-            position: relative;
-            margin-top: 20px;
-        }
-        
-        .lyrics {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            color: black;
-            font-size: 24px;
-            line-height: 1.8;
-            white-space: pre-line;
-            animation: scrollLyrics 60s linear infinite;
-        }
-        
-        @keyframes scrollLyrics {
-            0% { transform: translateY(100%); }
-            100% { transform: translateY(-100%); }
-        }
-        
-        .exit-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(255,255,255,0.7);
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 1001;
-        }
-        
-        /* 歌词设置弹窗 */
+        /* 弹窗样式 */
         .modal {
             display: none;
             position: fixed;
@@ -203,18 +188,18 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
-            z-index: 2000;
+            z-index: 100;
             justify-content: center;
             align-items: center;
         }
         
         .modal-content {
             background-color: white;
-            border-radius: 10px;
             padding: 20px;
+            border-radius: 10px;
             width: 90%;
             max-width: 500px;
-            max-height: 80%;
+            max-height: 80vh;
             overflow-y: auto;
         }
         
@@ -223,97 +208,160 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
         }
         
-        .close-btn {
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .close-button {
             background: none;
             border: none;
             font-size: 24px;
             cursor: pointer;
+            color: #666;
         }
         
-        textarea {
+        .lyrics-textarea {
             width: 100%;
             height: 300px;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             resize: vertical;
-            font-family: inherit;
+            font-family: monospace;
+            line-height: 1.5;
         }
         
-        .save-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
+        .modal-footer {
+            margin-top: 15px;
+            text-align: right;
+        }
+        
+        .save-button {
+            padding: 8px 15px;
             background-color: #4455dd;
             color: white;
             border: none;
             border-radius: 5px;
-            margin-top: 10px;
             cursor: pointer;
+        }
+        
+        /* 全屏应援模式样式 */
+        .cheer-mode {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            overflow: hidden;
+        }
+        
+        .cheer-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: background-color 0.5s;
+        }
+        
+        .lyrics-container {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            padding: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .lyrics-scroll {
+            display: inline-block;
+            color: black;
+            font-size: 20px;
+            font-weight: bold;
+            white-space: nowrap;
+            animation: scroll-lyrics 30s linear infinite;
+        }
+        
+        @keyframes scroll-lyrics {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        .exit-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255,255,255,0.7);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 201;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>世界的应援棒</h1>
-            <p>专为《世界计划：缤纷舞台大电影》准备的应援工具</p>
-        </header>
-        
-        <div class="settings">
-            <div class="setting-group">
-                <label>选择颜色</label>
-                <div class="color-options">
-                    <div class="color-option active" data-color="#ee1166" title="Vivid Bad Squad!"></div>
-                    <div class="color-option" data-color="#ff9900" title="Wonderland X Showtime"></div>
-                    <div class="color-option" data-color="#88dd44" title="MORE MORE JUMP!"></div>
-                    <div class="color-option" data-color="#4455dd" title="Leo/need"></div>
-                    <div class="color-option" data-color="#884499" title="25时，Nightcord见"></div>
-                    <div class="color-option" data-color="#39c5bb" title="VIRTUAL SINGER"></div>
-                </div>
-                <div class="custom-color">
-                    <span>自定义颜色:</span>
-                    <input type="color" id="customColor" value="#4455dd">
-                </div>
+    <header>
+        <h1>世界的应援棒</h1>
+        <p>为《世界计划：缤纷舞台大电影》准备的应援工具</p>
+    </header>
+    
+    <div class="settings-panel">
+        <div class="setting-group">
+            <label>选择颜色</label>
+            <div class="color-options">
+                <div class="color-option active" data-color="#ee1166" title="Vivid Bad Squad!"></div>
+                <div class="color-option" data-color="#ff9900" title="Wonderland X Showtime"></div>
+                <div class="color-option" data-color="#88dd44" title="MORE MORE JUMP!"></div>
+                <div class="color-option" data-color="#4455dd" title="Leo/need"></div>
+                <div class="color-option" data-color="#884499" title="25时，Nightcord见"></div>
+                <div class="color-option" data-color="#39c5bb" title="VIRTUAL SINGER"></div>
             </div>
-            
-            <div class="setting-group">
-                <div class="lyrics-setting">
-                    <div class="lyrics-toggle">
-                        <label>显示歌词</label>
-                        <input type="checkbox" id="showLyrics" checked>
-                    </div>
-                    <span class="gear-icon" id="lyricsSettings">⚙️</span>
-                </div>
+            <div class="custom-color">
+                <label>自定义颜色:</label>
+                <input type="text" id="custom-color" placeholder="#000000" maxlength="7">
             </div>
         </div>
         
-        <div class="preview" id="colorPreview">
-            颜色预览
+        <div class="setting-group">
+            <div class="lyrics-toggle">
+                <label>显示歌词</label>
+                <label class="switch">
+                    <input type="checkbox" id="lyrics-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+                <button class="settings-icon" id="lyrics-settings-btn">⚙️</button>
+            </div>
         </div>
-        
-        <button class="start-btn" id="startCheer">开始应援</button>
     </div>
     
-    <!-- 全屏应援模式 -->
-    <div class="cheer-mode" id="cheerMode">
-        <button class="exit-btn" id="exitCheer">✕</button>
-        <div class="lyrics-container" id="lyricsContainer">
-            <div class="lyrics" id="lyricsDisplay"></div>
-        </div>
+    <div class="preview-area" id="preview-area">
+        <div class="preview-text">颜色预览</div>
     </div>
+    
+    <button class="start-button" id="start-button">开始应援</button>
     
     <!-- 歌词设置弹窗 -->
-    <div class="modal" id="lyricsModal">
+    <div class="modal" id="lyrics-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>歌词设置</h2>
-                <button class="close-btn" id="closeModal">×</button>
+                <div class="modal-title">歌词设置</div>
+                <button class="close-button" id="close-lyrics-modal">&times;</button>
             </div>
             <p>这是显示的歌词的设置，用于应援时的合唱项目，可以自定义，默认为 "Hello SEKAI！"的歌词。</p>
-            <textarea id="customLyrics">
+            <textarea class="lyrics-textarea" id="lyrics-text">
 きっと届くはず　きっと見えるはず
 　Kitto todoku hazu kitto mieru hazu
 そんな会ってみたい未来を　僕はひとりきりのセカイで
@@ -424,118 +472,175 @@
 　　現在連繫起來吧　現在重合起來吧
 　　你看、聽見了對吧　你看、傳達到了吧　我們的歌聲
             </textarea>
-            <button class="save-btn" id="saveLyrics">保存歌词</button>
+            <div class="modal-footer">
+                <button class="save-button" id="save-lyrics">保存</button>
+            </div>
         </div>
+    </div>
+    
+    <!-- 全屏应援模式 -->
+    <div class="cheer-mode" id="cheer-mode">
+        <div class="cheer-background" id="cheer-background"></div>
+        <div class="lyrics-container" id="lyrics-container">
+            <div class="lyrics-scroll" id="lyrics-scroll"></div>
+        </div>
+        <button class="exit-button" id="exit-cheer">退出</button>
     </div>
     
     <script>
         // 获取DOM元素
         const colorOptions = document.querySelectorAll('.color-option');
-        const customColor = document.getElementById('customColor');
-        const colorPreview = document.getElementById('colorPreview');
-        const showLyrics = document.getElementById('showLyrics');
-        const lyricsSettings = document.getElementById('lyricsSettings');
-        const startCheer = document.getElementById('startCheer');
-        const cheerMode = document.getElementById('cheerMode');
-        const exitCheer = document.getElementById('exitCheer');
-        const lyricsContainer = document.getElementById('lyricsContainer');
-        const lyricsDisplay = document.getElementById('lyricsDisplay');
-        const lyricsModal = document.getElementById('lyricsModal');
-        const closeModal = document.getElementById('closeModal');
-        const customLyrics = document.getElementById('customLyrics');
-        const saveLyrics = document.getElementById('saveLyrics');
+        const customColorInput = document.getElementById('custom-color');
+        const previewArea = document.getElementById('preview-area');
+        const lyricsToggle = document.getElementById('lyrics-toggle');
+        const lyricsSettingsBtn = document.getElementById('lyrics-settings-btn');
+        const lyricsModal = document.getElementById('lyrics-modal');
+        const closeLyricsModal = document.getElementById('close-lyrics-modal');
+        const saveLyricsBtn = document.getElementById('save-lyrics');
+        const lyricsTextarea = document.getElementById('lyrics-text');
+        const startButton = document.getElementById('start-button');
+        const cheerMode = document.getElementById('cheer-mode');
+        const cheerBackground = document.getElementById('cheer-background');
+        const lyricsContainer = document.getElementById('lyrics-container');
+        const lyricsScroll = document.getElementById('lyrics-scroll');
+        const exitCheer = document.getElementById('exit-cheer');
         
         // 当前选中的颜色
-        let currentColor = '#4455dd';
+        let currentColor = '#ee1166';
         
         // 初始化
         function init() {
-            // 设置预览颜色
-            updatePreviewColor(currentColor);
+            // 设置默认颜色预览
+            updatePreview(currentColor);
             
             // 颜色选项点击事件
             colorOptions.forEach(option => {
-                option.addEventListener('click', function() {
+                option.addEventListener('click', () => {
                     // 移除所有active类
                     colorOptions.forEach(opt => opt.classList.remove('active'));
                     // 添加active类到当前选项
-                    this.classList.add('active');
-                    // 更新颜色
-                    currentColor = this.getAttribute('data-color');
-                    customColor.value = currentColor;
-                    updatePreviewColor(currentColor);
+                    option.classList.add('active');
+                    // 更新当前颜色
+                    currentColor = option.getAttribute('data-color');
+                    // 更新预览
+                    updatePreview(currentColor);
                 });
             });
             
-            // 自定义颜色变化事件
-            customColor.addEventListener('input', function() {
-                currentColor = this.value;
-                updatePreviewColor(currentColor);
-                
-                // 移除所有预设颜色的active类
-                colorOptions.forEach(opt => opt.classList.remove('active'));
+            // 自定义颜色输入事件
+            customColorInput.addEventListener('input', () => {
+                const color = customColorInput.value;
+                if (isValidHexColor(color)) {
+                    currentColor = color;
+                    updatePreview(currentColor);
+                    // 移除所有预设颜色的active类
+                    colorOptions.forEach(opt => opt.classList.remove('active'));
+                }
             });
             
-            // 歌词设置齿轮点击事件
-            lyricsSettings.addEventListener('click', function() {
+            // 歌词设置按钮点击事件
+            lyricsSettingsBtn.addEventListener('click', () => {
                 lyricsModal.style.display = 'flex';
             });
             
-            // 关闭弹窗事件
-            closeModal.addEventListener('click', function() {
+            // 关闭歌词设置弹窗
+            closeLyricsModal.addEventListener('click', () => {
                 lyricsModal.style.display = 'none';
             });
             
-            // 保存歌词事件
-            saveLyrics.addEventListener('click', function() {
+            // 保存歌词设置
+            saveLyricsBtn.addEventListener('click', () => {
                 lyricsModal.style.display = 'none';
             });
             
-            // 开始应援事件
-            startCheer.addEventListener('click', function() {
-                // 设置全屏背景色
-                cheerMode.style.backgroundColor = currentColor;
-                cheerMode.style.display = 'flex';
-                
-                // 设置歌词
-                if (showLyrics.checked) {
-                    lyricsDisplay.textContent = customLyrics.value;
-                    lyricsContainer.style.display = 'block';
-                } else {
-                    lyricsContainer.style.display = 'none';
-                }
-                
-                // 尝试进入全屏模式
-                if (cheerMode.requestFullscreen) {
-                    cheerMode.requestFullscreen();
-                } else if (cheerMode.webkitRequestFullscreen) {
-                    cheerMode.webkitRequestFullscreen();
-                } else if (cheerMode.msRequestFullscreen) {
-                    cheerMode.msRequestFullscreen();
+            // 点击弹窗外部关闭
+            window.addEventListener('click', (e) => {
+                if (e.target === lyricsModal) {
+                    lyricsModal.style.display = 'none';
                 }
             });
             
-            // 退出应援事件
-            exitCheer.addEventListener('click', function() {
-                // 退出全屏模式
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
-                
-                cheerMode.style.display = 'none';
+            // 开始应援按钮点击事件
+            startButton.addEventListener('click', () => {
+                startCheerMode();
+            });
+            
+            // 退出应援模式
+            exitCheer.addEventListener('click', () => {
+                exitCheerMode();
             });
         }
         
-        // 更新预览颜色
-        function updatePreviewColor(color) {
-            colorPreview.style.backgroundColor = color;
+        // 更新颜色预览
+        function updatePreview(color) {
+            previewArea.style.backgroundColor = color;
+            
+            // 根据颜色亮度调整文字颜色
+            const brightness = getColorBrightness(color);
+            previewArea.querySelector('.preview-text').style.color = brightness > 128 ? 'black' : 'white';
         }
         
-        // 初始化应用
+        // 计算颜色亮度
+        function getColorBrightness(hexColor) {
+            // 移除#号
+            const color = hexColor.replace('#', '');
+            
+            // 解析RGB值
+            const r = parseInt(color.substr(0, 2), 16);
+            const g = parseInt(color.substr(2, 2), 16);
+            const b = parseInt(color.substr(4, 2), 16);
+            
+            // 计算亮度 (使用加权平均值)
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
+        
+        // 验证十六进制颜色值
+        function isValidHexColor(color) {
+            return /^#([0-9A-F]{3}){1,2}$/i.test(color);
+        }
+        
+        // 开始应援模式
+        function startCheerMode() {
+            // 设置背景颜色
+            cheerBackground.style.backgroundColor = currentColor;
+            
+            // 设置歌词
+            if (lyricsToggle.checked) {
+                lyricsContainer.style.display = 'block';
+                lyricsScroll.textContent = lyricsTextarea.value.replace(/\n/g, ' ');
+            } else {
+                lyricsContainer.style.display = 'none';
+            }
+            
+            // 显示应援模式
+            cheerMode.style.display = 'block';
+            
+            // 进入全屏
+            if (cheerMode.requestFullscreen) {
+                cheerMode.requestFullscreen();
+            } else if (cheerMode.webkitRequestFullscreen) {
+                cheerMode.webkitRequestFullscreen();
+            } else if (cheerMode.msRequestFullscreen) {
+                cheerMode.msRequestFullscreen();
+            }
+        }
+        
+        // 退出应援模式
+        function exitCheerMode() {
+            // 退出全屏
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            
+            // 隐藏应援模式
+            cheerMode.style.display = 'none';
+        }
+        
+        // 初始化
         init();
     </script>
 </body>

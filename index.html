@@ -213,7 +213,6 @@
             left: 0;
             width: 100%;
             height: 40%;
-            background-color: rgba(255, 255, 255, 0.9);
             padding: 20px;
             overflow-y: auto;
             display: none;
@@ -222,8 +221,9 @@
         .lyrics-content {
             font-size: 1.2rem;
             line-height: 1.8;
-            color: #000;
+            color: #fff;
             white-space: pre-line;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
         }
 
         .exit-btn {
@@ -614,6 +614,8 @@
                 // 根据歌词开关显示歌词
                 if (lyricsToggle.checked) {
                     lyricsContainer.style.display = 'block';
+                    // 设置歌词区域背景色与应援色相同
+                    lyricsContainer.style.backgroundColor = currentColor;
                     lyricsContent.textContent = lyricsTextarea.value;
                 } else {
                     lyricsContainer.style.display = 'none';
